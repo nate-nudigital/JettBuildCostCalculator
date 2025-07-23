@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JettBuild Projects Cost Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(160, 160, 160, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid #8B0000;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #000000;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #333333;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #000000;
+            font-size: 16px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #999999;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #F5F5F5;
+            color: #000000;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #8B0000;
+            box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.3);
+        }
+
+        .input-field::placeholder {
+            color: #666666;
+        }
+
+        .labor-section {
+            margin-bottom: 20px;
+        }
+
+        .labor-row {
+            display: grid;
+            grid-template-columns: 1fr 50px 50px;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(245, 245, 245, 0.9);
+            border-radius: 12px;
+            border: 1px solid #999999;
+        }
+
+        .labor-info {
+            color: #000000;
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .labor-rate {
+            color: #333333;
+            font-size: 15px;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .labor-input {
+            width: 40px;
+            height: 32px;
+            padding: 6px 4px;
+            border: 2px solid #999999;
+            border-radius: 6px;
+            background: #FFFFFF;
+            color: #000000;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .labor-input:focus {
+            outline: none;
+            border-color: #8B0000;
+        }
+
+        .input-label {
+            font-size: 13px;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .profit-section {
+            background: rgba(245, 245, 245, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #999999;
+            margin-bottom: 25px;
+        }
+
+        .profit-controls {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .profit-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #CCCCCC;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .profit-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8B0000;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .profit-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8B0000;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .profit-display {
+            background: #FFFFFF;
+            border: 2px solid #999999;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #8B0000 0%, #660000 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 0, 0, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #8B0000 0%, #660000 100%);
+            border: 2px solid #B22222;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result h3 {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .result .total {
+            color: white;
+            font-size: 36px;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .breakdown {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .breakdown-item:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .labor-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .labor-inputs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-top: 10px;
+            }
+            
+            .profit-controls {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <h1>JettBuild Projects Cost Calculator</h1>
+            <p>Calculate project costs with adjustable profit margin</p>
+        </div>
+
+        <div class="input-group">
+            <label for="materials">Material Costs ($)</label>
+            <input type="text" id="materials" class="input-field" placeholder="Enter material costs" inputmode="decimal">
+        </div>
+
+        <div class="input-group">
+            <label>Labour Hours</label>
+            <div class="labor-section">
+                <div class="labor-row">
+                    <div>
+                        <div class="labor-info">Director</div>
+                        <div class="labor-rate">$100 per hour</div>
+                    </div>
+                    <div>
+                        <div class="input-label">Days</div>
+                        <input type="text" id="directorDays" class="labor-input" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div>
+                        <div class="input-label">Hours</div>
+                        <input type="text" id="directorHours" class="labor-input" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+                <div class="labor-row">
+                    <div>
+                        <div class="labor-info">Apprentice</div>
+                        <div class="labor-rate">$55 per hour</div>
+                    </div>
+                    <div>
+                        <div class="input-label">Days</div>
+                        <input type="text" id="apprenticeDays" class="labor-input" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div>
+                        <div class="input-label">Hours</div>
+                        <input type="text" id="apprenticeHours" class="labor-input" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profit-section">
+            <label style="margin-bottom: 15px; display: block;">Profit Margin</label>
+            <div class="profit-controls">
+                <input type="range" id="profitSlider" class="profit-slider" min="0" max="50" value="30" step="1">
+                <div class="profit-display" id="profitDisplay">30%</div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateCost()">
+            Calculate Total Cost
+        </button>
+
+        <div class="result" id="result">
+            <h3>Total Project Cost</h3>
+            <div class="total" id="totalAmount">$0.00</div>
+            <div class="breakdown" id="breakdown"></div>
+        </div>
+    </div>
+
+    <script>
+        // Handle profit slider
+        const profitSlider = document.getElementById('profitSlider');
+        const profitDisplay = document.getElementById('profitDisplay');
+
+        profitSlider.addEventListener('input', function() {
+            profitDisplay.textContent = this.value + '%';
+        });
+
+        function calculateCost() {
+            const materials = parseFloat(document.getElementById('materials').value) || 0;
+            const directorDays = parseFloat(document.getElementById('directorDays').value) || 0;
+            const directorHours = parseFloat(document.getElementById('directorHours').value) || 0;
+            const apprenticeDays = parseFloat(document.getElementById('apprenticeDays').value) || 0;
+            const apprenticeHours = parseFloat(document.getElementById('apprenticeHours').value) || 0;
+            const profitPercentage = parseFloat(profitSlider.value) / 100;
+
+            // Validation
+            if (materials < 0 || directorDays < 0 || directorHours < 0 || apprenticeDays < 0 || apprenticeHours < 0) {
+                alert('Please enter valid positive numbers');
+                return;
+            }
+
+            if (materials === 0 && directorDays === 0 && directorHours === 0 && apprenticeDays === 0 && apprenticeHours === 0) {
+                alert('Please enter at least one cost item');
+                return;
+            }
+
+            // Calculate total hours (days * 8 + hours)
+            const totalDirectorHours = (directorDays * 8) + directorHours;
+            const totalApprenticeHours = (apprenticeDays * 8) + apprenticeHours;
+
+            // Calculate labor costs
+            const directorCost = totalDirectorHours * 100;
+            const apprenticeCost = totalApprenticeHours * 55;
+            const totalLaborCost = directorCost + apprenticeCost;
+            
+            // Calculate totals
+            const subtotal = materials + totalLaborCost;
+            const profitMargin = subtotal * profitPercentage;
+            const total = subtotal + profitMargin;
+
+            // Display results
+            document.getElementById('totalAmount').textContent = `${total.toFixed(2)}`;
+            
+            // Create breakdown
+            let breakdownHTML = `
+                <div class="breakdown-item">
+                    <span>Materials:</span>
+                    <span>${materials.toFixed(2)}</span>
+                </div>
+            `;
+
+            if (totalDirectorHours > 0) {
+                let directorBreakdown = '';
+                if (directorDays > 0 && directorHours > 0) {
+                    directorBreakdown = `Director (${directorDays}d + ${directorHours}h = ${totalDirectorHours}h × $100):`;
+                } else if (directorDays > 0) {
+                    directorBreakdown = `Director (${directorDays}d = ${totalDirectorHours}h × $100):`;
+                } else {
+                    directorBreakdown = `Director (${directorHours}h × $100):`;
+                }
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <span>${directorBreakdown}</span>
+                        <span>${directorCost.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            if (totalApprenticeHours > 0) {
+                let apprenticeBreakdown = '';
+                if (apprenticeDays > 0 && apprenticeHours > 0) {
+                    apprenticeBreakdown = `Apprentice (${apprenticeDays}d + ${apprenticeHours}h = ${totalApprenticeHours}h × $55):`;
+                } else if (apprenticeDays > 0) {
+                    apprenticeBreakdown = `Apprentice (${apprenticeDays}d = ${totalApprenticeHours}h × $55):`;
+                } else {
+                    apprenticeBreakdown = `Apprentice (${apprenticeHours}h × $55):`;
+                }
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <span>${apprenticeBreakdown}</span>
+                        <span>${apprenticeCost.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            breakdownHTML += `
+                <div class="breakdown-item">
+                    <span>Subtotal:</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Profit Margin (${Math.round(profitPercentage * 100)}%):</span>
+                    <span>${profitMargin.toFixed(2)}</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Total:</span>
+                    <span>${total.toFixed(2)}</span>
+                </div>
+            `;
+
+            document.getElementById('breakdown').innerHTML = breakdownHTML;
+
+            // Show result with animation
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.add('show');
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateCost();
+            }
+        });
+
+        // Auto-save form data
+        document.getElementById('materials').addEventListener('input', function() {
+            localStorage.setItem('materials', this.value);
+        });
+
+        document.getElementById('directorDays').addEventListener('input', function() {
+            localStorage.setItem('directorDays', this.value);
+        });
+
+        document.getElementById('directorHours').addEventListener('input', function() {
+            localStorage.setItem('directorHours', this.value);
+        });
+
+        document.getElementById('apprenticeDays').addEventListener('input', function() {
+            localStorage.setItem('apprenticeDays', this.value);
+        });
+
+        document.getElementById('apprenticeHours').addEventListener('input', function() {
+            localStorage.setItem('apprenticeHours', this.value);
+        });
+
+        profitSlider.addEventListener('input', function() {
+            localStorage.setItem('profitPercentage', this.value);
+        });
+
+        // Restore saved data on page load
+        window.addEventListener('load', function() {
+            const savedMaterials = localStorage.getItem('materials');
+            const savedDirectorDays = localStorage.getItem('directorDays');
+            const savedDirectorHours = localStorage.getItem('directorHours');
+            const savedApprenticeDays = localStorage.getItem('apprenticeDays');
+            const savedApprenticeHours = localStorage.getItem('apprenticeHours');
+            const savedProfitPercentage = localStorage.getItem('profitPercentage');
+            
+            if (savedMaterials) document.getElementById('materials').value = savedMaterials;
+            if (savedDirectorDays) document.getElementById('directorDays').value = savedDirectorDays;
+            if (savedDirectorHours) document.getElementById('directorHours').value = savedDirectorHours;
+            if (savedApprenticeDays) document.getElementById('apprenticeDays').value = savedApprenticeDays;
+            if (savedApprenticeHours) document.getElementById('apprenticeHours').value = savedApprenticeHours;
+            if (savedProfitPercentage) {
+                profitSlider.value = savedProfitPercentage;
+                profitDisplay.textContent = savedProfitPercentage + '%';
+            }
+        });
+    </script>
+</body>
+</html>
